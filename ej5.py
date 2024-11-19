@@ -1,3 +1,7 @@
+import sys
+
+DIR_PRUEBAS = "Pruebas/"
+
 # Ubica los barcos en el tablero, eligiendo la fila/columna mas demandada y eligiendo el barco más grande posible que cubra esa demanda.
 # Recibe la lista de longitud de barcos, y las listas de demandas de filas y columnas.
 def batalla_naval(largo_barcos, demandas_fil, demandas_col):
@@ -94,16 +98,25 @@ def ubicar_barco(tablero, largo_barco, i_fil, i_col, demandas_fil, demandas_col,
 
 
 def main():
-    largo_barcos = [4, 3, 3, 2, 2, 2, 1, 1, 1, 1]
-    demandas_fila_og = [3, 2, 2, 4, 2, 1, 1, 2, 3, 0]
-    demandas_columna_og = [1, 2, 1, 3, 2, 2, 3, 1, 5, 0]
-    demandas_fila = [3, 2, 2, 4, 2, 1, 1, 2, 3, 0]
-    demandas_columna = [1, 2, 1, 3, 2, 2, 3, 1, 5, 0]
+    if len(sys.argv) > 1:
+        nombre_archivo = sys.argv[1]
+    else:
+        nombre_archivo = input("Por favor ingrese el nombre de su set de datos: ")
 
-    tablero_final = batalla_naval(largo_barcos, demandas_fila, demandas_columna)
-    for i, fila in enumerate(tablero_final):
-        print((fila, demandas_fila_og[i]))
-    print('\n')
-    print(demandas_columna_og)
+    with open(DIR_PRUEBAS + nombre_archivo) as archivo:
+        lines = [line.strip() for line in archivo if not line.strip().startswith('#')]
+        sections = "\n".join(lines).strip().split("\n\n")
 
-main()
+        # Parse each section into respective lists
+        demandas_fila = [int(x) for x in sections[0].strip().split("\n")]
+        demandas_columna = [int(x) for x in sections[1].strip().split("\n")]
+        largo_barcos = [int(x) for x in sections[2].strip().split("\n")]
+
+        tablero_final = batalla_naval(largo_barcos, demandas_fila, demandas_columna)
+        for i, fila in enumerate(tablero_final):
+            print((fila, demandas_fila[i]))
+        print('\n')
+        print(demandas_columna)
+
+if __name__ == "__main__":
+    main()
