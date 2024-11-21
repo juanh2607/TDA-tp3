@@ -1,4 +1,4 @@
-import sys
+import sys, os
 
 DIR_PRUEBAS = "Pruebas/"
 
@@ -14,8 +14,12 @@ def batalla_naval(largo_barcos, demandas_fil, demandas_col):
         ubicado = False
 
         while not ubicado:
-            max_demanda_fil = max((d, i) for i, d in enumerate(demandas_fil) if d >= barco)
-            max_demanda_col = max((d, j) for j, d in enumerate(demandas_col) if d >= barco)
+            max_demanda_fil = max((d, i) for i, d in enumerate(demandas_fil))
+            max_demanda_col = max((d, j) for j, d in enumerate(demandas_col))
+            
+            # El barco es mas grande que la demanda
+            if max_demanda_fil[0] < barco and max_demanda_col[0] < barco:
+                break
 
             if max_demanda_fil[0] >= max_demanda_col[0]:
                 # Intenta ubicar por fila
@@ -35,10 +39,10 @@ def batalla_naval(largo_barcos, demandas_fil, demandas_col):
                         break
 
             # No se puede ubicar al barco
-            if not ubicado and max_demanda_fil[0] < barco and max_demanda_col[0] < barco:
+            if not ubicado:
                 break
 
-    return tablero
+    return tablero, demandas_fil, demandas_col
 
 
 # Intenta ubicar el barco, horizontalmente en la fila i_fil, o verticalmente en la columna i_col (segun el caso).
@@ -100,23 +104,36 @@ def ubicar_barco(tablero, largo_barco, i_fil, i_col, demandas_fil, demandas_col,
 def main():
     if len(sys.argv) > 1:
         nombre_archivo = sys.argv[1]
+        archivos_a_procesar = [nombre_archivo]
     else:
-        nombre_archivo = input("Por favor ingrese el nombre de su set de datos: ")
+        archivos_a_procesar = [f for f in os.listdir(DIR_PRUEBAS) if os.path.isfile(os.path.join(DIR_PRUEBAS, f))]
 
-    with open(DIR_PRUEBAS + nombre_archivo) as archivo:
-        lines = [line.strip() for line in archivo if not line.strip().startswith('#')]
-        sections = "\n".join(lines).strip().split("\n\n")
+    for archivo_nombre in archivos_a_procesar:
+        with open(os.path.join(DIR_PRUEBAS, archivo_nombre)) as archivo:
+            lines = [line.strip() for line in archivo if not line.strip().startswith('#')]
+            sections = "\n".join(lines).strip().split("\n\n")
 
-        # Parse each section into respective lists
-        demandas_fila = [int(x) for x in sections[0].strip().split("\n")]
-        demandas_columna = [int(x) for x in sections[1].strip().split("\n")]
-        largo_barcos = [int(x) for x in sections[2].strip().split("\n")]
+            demandas_fil = [int(x) for x in sections[0].strip().split("\n")]
+            demandas_col = [int(x) for x in sections[1].strip().split("\n")]
+            largo_barcos = [int(x) for x in sections[2].strip().split("\n")]
 
-        tablero_final = batalla_naval(largo_barcos, demandas_fila, demandas_columna)
-        for i, fila in enumerate(tablero_final):
-            print((fila, demandas_fila[i]))
-        print('\n')
-        print(demandas_columna)
-
+            tablero_final, demandas_fil_final, demandas_col_final  = batalla_naval(largo_barcos, demandas_fil.copy(), demandas_col.copy())
+            #for i, fila in enumerate(tablero_final):
+            #    print((fila, demandas_fila[i]))
+            #print('\n')
+            #print(demandas_columna)
+            
+            # CORREGIR: mal calculadas las demandas cumplidas e incumplidas.
+            
+            for i, fila in enumerate(tablero_final):
+                #print(fila, demandas_fil[i] - sum(fila))
+                print(fila)
+            demanda_cumplida = sum(l1 - l2 for l1, l2 in zip(demandas_fil, demandas_fil_final)) + sum(l3 - l4 for l3, l4 in zip(demandas_col, demandas_col_final))
+            demanda_incumplida = sum(demandas_fil_final) + sum(demandas_col_final)
+            demanda_total = sum(demandas_fil) + sum(demandas_col)
+            print("Demanda cumplida:", demanda_cumplida)
+            print("Demanda incumplida:", demanda_incumplida)
+            print("Demanda total:", demanda_total)
+            print("\n")
 if __name__ == "__main__":
     main()
