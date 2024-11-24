@@ -1,0 +1,39 @@
+3_3_2.txt
+Demanda cumplida: 4
+Demanda total: 11
+
+5_5_6.txt
+Demanda cumplida: 12
+Demanda total: 18
+
+8_7_10.txt
+Demanda cumplida: 26
+Demanda total: 53
+
+10_3_3.txt
+Demanda cumplida: 6
+Demanda total: 14
+
+10_10_10.txt
+Demanda cumplida: 40
+Demanda total: 40
+
+12_12_21.txt
+Demanda cumplida: 46
+Demanda total: 58
+
+15_10_15.txt
+Demanda cumplida: 40
+Demanda total: 67
+
+20_20_20.txt
+Demanda cumplida: 104
+Demanda total: 120
+
+20_25_30.txt
+Demanda cumplida: 172
+Demanda total: 247
+
+30_25_25.txt
+Demanda cumplida: 202
+Demanda total: 360
