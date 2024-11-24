@@ -13,8 +13,9 @@ def batalla_naval(largo_barcos, demandas_fil, demandas_col):
 
     batalla_naval_bt(tablero, largo_barcos, demandas_fil, demandas_col, solucion)
 
-    # for fila in solucion[TABLERO]:
-    #     print(fila)
+    for fila in solucion[TABLERO]:
+        print(fila)
+
     demanda_total = sum(demandas_fil) + sum(demandas_col)
     demanda_cumplida = demanda_total - solucion[DEMANDA_INCUMPLIDA]
     # print("Demanda incumplida:", solucion[DEMANDA_INCUMPLIDA])

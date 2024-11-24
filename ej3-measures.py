@@ -47,12 +47,12 @@ def run_test_files(dir, expected_results):
     runtimes = {}
 
     for file in os.listdir(dir):
-        print(f"Running test {file}")
+        # print(f"Running test {file}")
 
         route = os.path.join(dir, file)
         runtime = run_test(route, expected_results[file])
 
-        print(f"Tiempo de ejecución test {file}: {runtime:.6f} segundos\n")
+        # print(f"Tiempo de ejecución test {file}: {runtime:.6f} segundos\n")
 
         runtimes[file] = runtime
 
