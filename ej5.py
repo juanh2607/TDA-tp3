@@ -25,7 +25,8 @@ def batalla_naval(largo_barcos, demandas_fil, demandas_col):
                 # Intenta ubicar por fila
                 i_fil = max_demanda_fil[1]
                 for i_col in range(m):
-                    if intentar_ubicar_barco(tablero, m, n, barco, i_fil, i_col, True):
+                    #if intentar_ubicar_barco(tablero, m, n, barco, i_fil, i_col, True):
+                    if intentar_ubicar_barco(tablero, barco, i_fil, i_col, True, demandas_fil, demandas_col):
                         ubicar_barco(tablero, barco, i_fil, i_col, demandas_fil, demandas_col, True)
                         ubicado = True
                         break
@@ -33,7 +34,8 @@ def batalla_naval(largo_barcos, demandas_fil, demandas_col):
                 # Intenta ubicar por columna
                 i_col = max_demanda_col[1]
                 for i_fil in range(n):
-                    if intentar_ubicar_barco(tablero, m, n, barco, i_fil, i_col, False):
+                    #if intentar_ubicar_barco(tablero, m, n, barco, i_fil, i_col, False):
+                    if intentar_ubicar_barco(tablero, barco, i_fil, i_col, False, demandas_fil, demandas_col):
                         ubicar_barco(tablero, barco, i_fil, i_col, demandas_fil, demandas_col, False)
                         ubicado = True
                         break
@@ -45,43 +47,63 @@ def batalla_naval(largo_barcos, demandas_fil, demandas_col):
     return tablero, demandas_fil, demandas_col
 
 
-# Intenta ubicar el barco, horizontalmente en la fila i_fil, o verticalmente en la columna i_col (segun el caso).
-# Chequea que no se salga del tablero, que los casilleros a tomar no estén siendo utilizados por otro barco y que no tenga barcos adyacentes.
-def intentar_ubicar_barco(tablero, m, n, largo_barco, i_fil, i_col, es_horizontal):
+def intentar_ubicar_barco(
+    tablero, largo_barco, i_fil, i_col, es_horizontal, demandas_fil, demandas_col
+):
+    n, m = len(tablero), len(tablero[0])
+
+    # Verificar que el barco no salga del tablero
     if es_horizontal:
         if i_col + largo_barco > m:
             return False
-        for i in range(i_col, i_col + largo_barco):
-            # Revisa que el casillero no este ocupado por otro barco.
-            if tablero[i_fil][i] == 1:
-                return False
-            # Revisa adyacencias (por fila, columna y diagonales)
-            adyacencias = [(-1, -1), (-1, 0), (-1, 1), (0, -1), (0, 1), (1, -1), (1, 0), (1, 1)]
-            for dx, dy in adyacencias:
-                nx, ny = i_fil + dx, i + dy
-                if 0 <= nx < n and 0 <= ny < m and tablero[nx][ny] != 0:
-                    return False
-        # Busca barcos adyacentes a los costados del barco.
-        if (i_col > 0 and tablero[i_fil][i_col - 1] != 0) or (i_col + largo_barco < m and tablero[i_fil][i_col + largo_barco] != 0):
-            return False
-    
-    else:
+    else:  # Es vertical
         if i_fil + largo_barco > n:
             return False
-        for i in range(i_fil, i_fil + largo_barco):
-            # Revisa que el casillero no este ocupado por otro barco.
-            if tablero[i][i_col] == 1:
-                return False
-            # Revisa adyacencias (por fila, columna y diagonales)
-            adyacencias = [(-1, -1), (-1, 0), (-1, 1), (0, -1), (0, 1), (1, -1), (1, 0), (1, 1)]
-            for dx, dy in adyacencias:
-                nx, ny = i + dx, i_col + dy
-                if 0 <= nx < n and 0 <= ny < m and tablero[nx][ny] != 0:
-                    return False
-        # Busca barcos adyacentes por encima y por debajo del barco.
-        if (i_fil > 0 and tablero[i_fil - 1][i_col] == 1) or (i_fil + largo_barco < n and tablero[i_fil + largo_barco][i_col] == 1):
+    # Verificar que no se violen las demandas de fila y columna
+    if es_horizontal:
+        if demandas_fil[i_fil] < largo_barco:
             return False
-    
+        for i in range(largo_barco):
+            if demandas_col[i_col + i] < 1:
+                return False
+    else:  # Es vertical
+        if demandas_col[i_col] < largo_barco:
+            return False
+        for i in range(largo_barco):
+            if demandas_fil[i_fil + i] < 1:
+                return False
+    # Verificar que no haya barcos adyacentes o superpuestos
+    for i in range(largo_barco):
+        fil, col = (i_fil, i_col + i) if es_horizontal else (i_fil + i, i_col)
+        # Revisa que el casillero no este ocupado por otro barco.
+        if tablero[fil][col] != 0:
+            return False
+        # Revisa adyacencias (por fila, columna y diagonales)
+        for dx, dy in [
+            (-1, -1),
+            (-1, 0),
+            (-1, 1),
+            (0, -1),
+            (0, 1),
+            (1, -1),
+            (1, 0),
+            (1, 1),
+        ]:
+            adj_fil, adj_col = fil + dx, col + dy
+            if 0 <= adj_fil < n and 0 <= adj_col < m and tablero[adj_fil][adj_col] != 0:
+                return False
+    # Verificar extremos del barco
+    if es_horizontal:
+        if i_col > 0 and tablero[i_fil][i_col - 1] != 0:
+            return False
+        if i_col + largo_barco < m and tablero[i_fil][i_col + largo_barco] != 0:
+            return False
+    else:  # Es vertical
+        if i_fil > 0 and tablero[i_fil - 1][i_col] != 0:
+            return False
+        if i_fil + largo_barco < n and tablero[i_fil + largo_barco][i_col] != 0:
+            return False
+
     return True
 
 
@@ -126,7 +148,7 @@ def main():
             for i, fila in enumerate(tablero_final):
                 print(fila)
             demanda_total = sum(demandas_fil) + sum(demandas_col)
-            demanda_incumplida = sum(x for x in demandas_fil_final if x > 0) + sum(x for x in demandas_col_final if x > 0)
+            demanda_incumplida = sum(demandas_fil_final) + sum(demandas_col_final)
             demanda_cumplida = demanda_total - demanda_incumplida
             print("Demanda cumplida:", demanda_cumplida)
             print("Demanda incumplida:", demanda_incumplida)
