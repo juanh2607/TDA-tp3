@@ -125,13 +125,14 @@ def main():
             print("---" + archivo_nombre + "---")
             for i, fila in enumerate(tablero_final):
                 print(fila)
-            demanda_cumplida = sum(l1 - l2 for l1, l2 in zip(demandas_fil, demandas_fil_final)) + sum(l3 - l4 for l3, l4 in zip(demandas_col, demandas_col_final))
-            demanda_incumplida = sum(demandas_fil_final) + sum(demandas_col_final)
             demanda_total = sum(demandas_fil) + sum(demandas_col)
+            demanda_incumplida = sum(x for x in demandas_fil_final if x > 0) + sum(x for x in demandas_col_final if x > 0)
+            demanda_cumplida = demanda_total - demanda_incumplida
             print("Demanda cumplida:", demanda_cumplida)
             print("Demanda incumplida:", demanda_incumplida)
             print("Demanda total:", demanda_total)
             print("Duracion:", duracion, "ns")
             print("\n")
+
 if __name__ == "__main__":
     main()
