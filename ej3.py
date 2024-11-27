@@ -1,3 +1,7 @@
+import sys, os, time
+
+DIR_PRUEBAS = "Pruebas/"
+
 TABLERO = 0
 DEMANDA_INCUMPLIDA = 1
 
@@ -18,9 +22,6 @@ def batalla_naval(largo_barcos, demandas_fil, demandas_col):
 
     demanda_total = sum(demandas_fil) + sum(demandas_col)
     demanda_cumplida = demanda_total - solucion[DEMANDA_INCUMPLIDA]
-    # print("Demanda incumplida:", solucion[DEMANDA_INCUMPLIDA])
-    # print("Demanda cumplida:", demanda_cumplida)
-    # print("Demanda total:", demanda_total)
 
     return (demanda_cumplida, demanda_total)
 
@@ -195,3 +196,35 @@ def quitar_barco(
         demandas_col[i_col] += largo_barco
         for i in range(i_fil, i_fil + largo_barco):
             demandas_fil[i] += 1
+
+def main():
+    if len(sys.argv) > 1:
+        nombre_archivo = sys.argv[1]
+        archivos_a_procesar = [nombre_archivo]
+    else:
+        archivos_a_procesar = [f for f in os.listdir(DIR_PRUEBAS) if os.path.isfile(os.path.join(DIR_PRUEBAS, f))]
+
+    for archivo_nombre in archivos_a_procesar:
+        with open(os.path.join(DIR_PRUEBAS, archivo_nombre)) as archivo:
+            lines = [line.strip() for line in archivo if not line.strip().startswith('#')]
+            sections = "\n".join(lines).strip().split("\n\n")
+
+            print("---" + archivo_nombre + "---")
+
+            demandas_fil = [int(x) for x in sections[0].strip().split("\n")]
+            demandas_col = [int(x) for x in sections[1].strip().split("\n")]
+            largo_barcos = [int(x) for x in sections[2].strip().split("\n")]
+
+            tiempo_inicio = time.perf_counter()
+            demanda_cumplida, demanda_total  = batalla_naval(largo_barcos, demandas_fil.copy(), demandas_col.copy())
+            tiempo_final = time.perf_counter()
+            duracion = tiempo_final - tiempo_inicio
+            
+            print("Demanda cumplida:", demanda_cumplida)
+            print("Demanda incumplida:", demanda_total - demanda_cumplida)
+            print("Demanda total:", demanda_total)
+            print("Duracion:", duracion, "ns")
+            print("\n")
+
+if __name__ == "__main__":
+    main()
