@@ -1,4 +1,4 @@
-import sys, os
+import sys, os, time
 
 DIR_PRUEBAS = "Pruebas/"
 
@@ -117,16 +117,13 @@ def main():
             demandas_col = [int(x) for x in sections[1].strip().split("\n")]
             largo_barcos = [int(x) for x in sections[2].strip().split("\n")]
 
+            tiempo_inicio = time.perf_counter()
             tablero_final, demandas_fil_final, demandas_col_final  = batalla_naval(largo_barcos, demandas_fil.copy(), demandas_col.copy())
-            #for i, fila in enumerate(tablero_final):
-            #    print((fila, demandas_fila[i]))
-            #print('\n')
-            #print(demandas_columna)
+            tiempo_final = time.perf_counter()
+            duracion = tiempo_final - tiempo_inicio
             
-            # CORREGIR: mal calculadas las demandas cumplidas e incumplidas.
-            
+            print("---" + archivo_nombre + "---")
             for i, fila in enumerate(tablero_final):
-                #print(fila, demandas_fil[i] - sum(fila))
                 print(fila)
             demanda_cumplida = sum(l1 - l2 for l1, l2 in zip(demandas_fil, demandas_fil_final)) + sum(l3 - l4 for l3, l4 in zip(demandas_col, demandas_col_final))
             demanda_incumplida = sum(demandas_fil_final) + sum(demandas_col_final)
@@ -134,6 +131,7 @@ def main():
             print("Demanda cumplida:", demanda_cumplida)
             print("Demanda incumplida:", demanda_incumplida)
             print("Demanda total:", demanda_total)
+            print("Duracion:", duracion, "ns")
             print("\n")
 if __name__ == "__main__":
     main()
