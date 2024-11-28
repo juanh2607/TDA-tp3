@@ -46,7 +46,8 @@ def batalla_naval(largo_barcos, demandas_fil, demandas_col):
 
     return tablero, demandas_fil, demandas_col
 
-
+# Intenta ubicar el barco, horizontalmente en la fila i_fil, o verticalmente en la columna i_col (segun el caso).
+# Chequea que no se salga del tablero, que los casilleros a tomar no estén siendo utilizados por otro barco y que no tenga barcos adyacentes.
 def intentar_ubicar_barco(
     tablero, largo_barco, i_fil, i_col, es_horizontal, demandas_fil, demandas_col
 ):
